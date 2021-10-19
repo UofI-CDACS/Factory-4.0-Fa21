@@ -1,0 +1,5 @@
+# Exclude backup files
+*.emtp.bak*
+
+# Exclude compiled file
+*.exob
