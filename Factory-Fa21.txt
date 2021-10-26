@@ -456,12 +456,12 @@ UDCG CT10 DST511 DST511
 // Rung HBW_Encoders#3
 // Offset 6
 STR HBW_Encoders.FirstRun
-OUT $HBW_X_Encoder.ResetLevel
+OUT Y99
 
 // Rung HBW_Encoders#4
 // Offset 8
 STR ST1
-COPY 0x1 "4 0x0 $HBW_X_Encoder.Acc V10 1"
+OUT C99
 
 // Rung HBW_Encoders#5
 // Offset 15
@@ -967,7 +967,7 @@ ONDTMR T3 500 C0
 #END
 
 STR T3.Done
-OUT $HBW_X_Encoder.ResetLevel
+OUT C99
 
 // Rung HBW_Program#55
 // Offset 285
