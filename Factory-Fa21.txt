@@ -301,10 +301,10 @@ $LGCMOD SLD_Copy_State
 // Rung SLD_Copy_State#1
 // Offset 0
 STR ST1
-COPY 0x1 "4 0x0 MHR1600 V3200 1 0x0 MC800 C1610 1"
+COPY 0x1 "4 0x0 MHR1600 V3200 1 0x0 MC800 C1610 1 0x0 MC801 C1650 1 0x0 MC802 C1651 1 0x0 MC803 C1652 1 0x0 MC804 C1653 1 0x0 MC805 C1654 1 0x0 MC806 C1655 1 0x0 V3201 MHR1601 1"
 
 // Rung SLD_Copy_State#2
-// Offset 9
+// Offset 23
 RET
 
 // End of Code Block SLD_Copy_State
@@ -1674,26 +1674,114 @@ SG SLD_Program.S0
 
 // Rung SLD_Program#2
 // Offset 2
+NOP
+
+// Rung SLD_Program#3
+// Offset 3
 STR ST1
 CALL SLD_Copy_State 0x1 DST511 "3" "3"
 
-// Rung SLD_Program#3
-// Offset 10
+// Rung SLD_Program#4
+// Offset 11
 #BEGIN FMT_COMMENT 
-"Am planning to add a button to jump to a state where there "
-"is a test suite. To run conveyor, and ejectors<br> <br>"
-"For now, goes automatically to state 1."
+"Wait for Doug Start Command"
 #END
 
-STR ST1
+STR C1610
 JMP SLD_Program.S1
 
-// Rung SLD_Program#4
-// Offset 12
+// Rung SLD_Program#5
+// Offset 13
+#BEGIN FMT_COMMENT 
+"Enter manual mode S10"
+#END
+
+STR C1650
+JMP SLD_Program.S10
+
+// Rung SLD_Program#6
+// Offset 15
+#BEGIN FMT_COMMENT 
+"Stage 10 has manual controls for SLD"
+#END
+
+SG SLD_Program.S10
+
+// Rung SLD_Program#7
+// Offset 17
+STR ST1
+CALL SLD_Copy_State 0x1 DST511 "3" "3"
+
+// Rung SLD_Program#8
+// Offset 25
+#BEGIN FMT_COMMENT 
+"Manual control for conveyor belt"
+#END
+
+STR C1651
+OUT Y30
+
+// Rung SLD_Program#9
+// Offset 27
+#BEGIN FMT_COMMENT 
+"Manual Compressor Control"
+#END
+
+STR C1652
+OUT Y31
+
+// Rung SLD_Program#10
+// Offset 29
+#BEGIN FMT_COMMENT 
+"Manual White Ejector"
+#END
+
+STR C1653
+OUT Y32
+
+// Rung SLD_Program#11
+// Offset 31
+#BEGIN FMT_COMMENT 
+"Manual Red Ejector"
+#END
+
+STR C1654
+OUT Y33
+
+// Rung SLD_Program#12
+// Offset 33
+#BEGIN FMT_COMMENT 
+"Manual Blue Ejector"
+#END
+
+STR C1655
+OUT Y34
+
+// Rung SLD_Program#13
+// Offset 35
+STR ST1
+SUBSCRIB "4 WX0 V3201 1 0x4"
+
+// Rung SLD_Program#14
+// Offset 40
+#BEGIN FMT_COMMENT 
+"Manual Auto Run"
+#END
+
+STR C1611
+JMP SLD_Program.S1
+
+// Rung SLD_Program#15
+// Offset 42
+STRN C1650
+JMP SLD_Program.S0
+
+// Rung SLD_Program#16
+// Offset 44
 SG SLD_Program.S1
 
-// Rung SLD_Program#5
-// Offset 14
+// Rung SLD_Program#17
+// Offset 46
 #BEGIN FMT_COMMENT 
 "When the light barrier is broken, turns on timer to run "
 "conveyor belt with disk until the middle of color sensor."
@@ -1703,8 +1791,8 @@ STR ST1
 ANDND X35
 OFFDTMR T200 3000 C1600
 
-// Rung SLD_Program#6
-// Offset 20
+// Rung SLD_Program#18
+// Offset 52
 #BEGIN FMT_COMMENT 
 "C1600 is set to true when timer is running so the conveyor moves"
 #END
@@ -1712,8 +1800,8 @@ OFFDTMR T200 3000 C1600
 STR C1600
 OUT Y30
 
-// Rung SLD_Program#7
-// Offset 22
+// Rung SLD_Program#19
+// Offset 54
 #BEGIN FMT_COMMENT 
 "When the timer is done, move to stage 2."
 #END
@@ -1721,16 +1809,16 @@ OUT Y30
 STR T200.Done
 JMP SLD_Program.S2
 
-// Rung SLD_Program#8
-// Offset 24
+// Rung SLD_Program#20
+// Offset 56
 NOP
 
-// Rung SLD_Program#9
-// Offset 25
+// Rung SLD_Program#21
+// Offset 57
 SG SLD_Program.S2
 
-// Rung SLD_Program#10
-// Offset 27
+// Rung SLD_Program#22
+// Offset 59
 #BEGIN FMT_COMMENT 
 "State 2 is where color is determined by checking if the "
 "analog value is within a range, and conveyor timer distance "
@@ -1740,8 +1828,8 @@ SG SLD_Program.S2
 
 NOP
 
-// Rung SLD_Program#11
-// Offset 28
+// Rung SLD_Program#23
+// Offset 60
 #BEGIN FMT_COMMENT 
 "Subscrib is to get value from color sensor and convert it "
 "to something the HMI understands.<br> <br>Need help with HMI"
@@ -1750,8 +1838,8 @@ NOP
 STR ST1
 SUBSCRIB "4 WX0 V3200 1 0x4"
 
-// Rung SLD_Program#12
-// Offset 33
+// Rung SLD_Program#24
+// Offset 65
 #BEGIN FMT_COMMENT 
 "The disk should now be in the center of the color sensor. "
 "This function checks if the color of the disk is in the "
@@ -1761,18 +1849,18 @@ SUBSCRIB "4 WX0 V3200 1 0x4"
 STR ST1
 RANGECHECK V3200 0x1 23000 22000 C1601
 
-// Rung SLD_Program#13
-// Offset 38
+// Rung SLD_Program#25
+// Offset 70
 STR ST1
 RANGECHECK V3200 0x1 20500 19500 C1602
 
-// Rung SLD_Program#14
-// Offset 43
+// Rung SLD_Program#26
+// Offset 75
 STR ST1
 RANGECHECK V3200 0x1 16000 15000 C1603
 
-// Rung SLD_Program#15
-// Offset 48
+// Rung SLD_Program#27
+// Offset 80
 #BEGIN FMT_COMMENT 
 "If C1601 is true, Off Delay timer starts output is set to "
 "C1604 which when true runs Y30 for timer length."
@@ -1781,8 +1869,8 @@ RANGECHECK V3200 0x1 16000 15000 C1603
 STR C1601
 OFFDTMR T201 3000 C1604
 
-// Rung SLD_Program#16
-// Offset 52
+// Rung SLD_Program#28
+// Offset 84
 #BEGIN FMT_COMMENT 
 "When C1604 is true, turn on conveyor."
 #END
@@ -1790,55 +1878,55 @@ OFFDTMR T201 3000 C1604
 STR C1604
 OUT Y30
 
-// Rung SLD_Program#17
-// Offset 54
+// Rung SLD_Program#29
+// Offset 86
 STR C1602
 OFFDTMR T202 2000 C1605
 
-// Rung SLD_Program#18
-// Offset 58
+// Rung SLD_Program#30
+// Offset 90
 STR C1605
 OUT Y30
 
-// Rung SLD_Program#19
-// Offset 60
+// Rung SLD_Program#31
+// Offset 92
 STR C1603
 OFFDTMR T203 1000 C1606
 
-// Rung SLD_Program#20
-// Offset 64
+// Rung SLD_Program#32
+// Offset 96
 STR C1606
 OUT Y30
 
-// Rung SLD_Program#21
-// Offset 66
+// Rung SLD_Program#33
+// Offset 98
 STR T201.Done
 JMP SLD_Program.S3
 
-// Rung SLD_Program#22
-// Offset 68
+// Rung SLD_Program#34
+// Offset 100
 NOP
 
-// Rung SLD_Program#23
-// Offset 69
+// Rung SLD_Program#35
+// Offset 101
 SG SLD_Program.S3
 
-// Rung SLD_Program#24
-// Offset 71
+// Rung SLD_Program#36
+// Offset 103
 NOP
 
-// Rung SLD_Program#25
-// Offset 72
+// Rung SLD_Program#37
+// Offset 104
 STRND X36
 OFFDTMR T204 5000 C1611
 
-// Rung SLD_Program#26
-// Offset 77
+// Rung SLD_Program#38
+// Offset 109
 STR C1611
 OUT Y34
 
-// Rung SLD_Program#27
-// Offset 79
+// Rung SLD_Program#39
+// Offset 111
 STR T204.Done
 JMP SLD_Program.S1
 
@@ -1941,7 +2029,7 @@ $PGMEND SSC_Program
 "X17","MPO_I6","","MPO - I6 = Reference switch oven feeder inside -  IX_MPO_RefSwitchOv enFeederInside_I6"
 "X18","MPO_I7","","MPO - I7 = Reference switch oven feeder outside -  IX_MPO_RefSwitchOv enFeederOutside_I7"
 "X19","MPO_I8","","MPO - I8 = Reference switch vacuum (position oven) -  IX_MPO_RefSwitchVac _PosOven_I8"
-"X24","MPO_I9","","MPO - I9 = Light barrier oven -  IX_MPO_LightBarrierOv en_I9"
+"X24","MPO_I9","","MPO - I9 = Light barrier oven -  IX_MPO_LightBarrierO v en_I9"
 "X25","VGR_I1","","VGR - I1 = Reference switch vertical axis -  IX_VGR_RefSwitchVert icalAxis_I1"
 "X26","VGR_I2","","VGR - I2 = Reference switch horizontal axis -  IX_VGR_RefSwitchHori zontalAxis_I2"
 "X27","VGR_I3","","VGR - I3 = Reference switch rotate -  IX_VGR_RefSwitchRot ate_I3"
@@ -1952,15 +2040,15 @@ $PGMEND SSC_Program
 "X32","VGR_B5","","VGR - B5 = Encoder rotate impulse 1 -  IX_VGR_EncoderRotat eImp1_B5"
 "X33","VGR_B6","","VGR - B6 = Encoder rotate impulse 2 -  IX_VGR_EncoderRotat eImp2_B6"
 "X34","SLD_I1","","SLD - I1 = Pulse counter -  IX_SLD_PulseCounter_ I1"
-"X35","SLD_I2","","SLD - I2 = Light barrier inlet -  IX_SLD_LightBarrierInle t_I2"
+"X35","SLD_I2","","SLD - I2 = Light barrier inlet -  IX_SLD_LightBarrierInl e t_I2"
 "X36","SLD_I3","","SLD - I3 = Light barrier behind color sensor -  IX_SLD_LightBarrierBe hindColorSensor_I3"
-"X37","SLD_I5","","SLD - I5 = Light barrier white -  IX_SLD_LightBarrierWh ite_I5"
+"X37","SLD_I5","","SLD - I5 = Light barrier white -  IX_SLD_LightBarrierW h ite_I5"
 "X38","SLD_I6","","SLD - I6 = Light barrier red -  IX_SLD_LightBarrierRe d_I6"
-"X39","SLD_I7","","SLD - I7 = Light barrier blue -  IX_SLD_LightBarrierBlu e_I7"
+"X39","SLD_I7","","SLD - I7 = Light barrier blue -  IX_SLD_LightBarrierBl u e_I7"
 "X40","SSC_I1","","SSC - I1 = Reference switch vertical axis -  IX_SSC_RefSwitchVerti calAxis_I1"
 "X41","SSC_I2","","SSC - I2 = Reference switch horizontal axis -  IX_SSC_RefSwitchHori zontalAxis_I2"
 "X42","SSC_I3","","SSC - I3 = Light barrier inlet -  IX_SSC_LightBarrierSto rage_I3"
-"X43","SSC_I4","","SSC - I4 = Light barrier behind color sensor -  IX_SSC_LightBarrierOut sourcing_I4"
+"X43","SSC_I4","","SSC - I4 = Light barrier behind color sensor -  IX_SSC_LightBarrierOu t sourcing_I4"
 "X44","SSC_B1","","SSC - B1 = Encoder vertical axis imulse 1 -  IX_SSC_EncoderVertic alAxisImp1_B1"
 "X45","SSC_B2","","SSC - B2 = Encoder vertical axis imulse 2 -  IX_SSC_EncoderVertic alAxisImp2_B2"
 "X46","SSC_B3","","SSC - B3 = Encoder horizontal axis imulse 1 -  IX_SSC_EncoderHorizo ntalAxisImp1_B3"
@@ -2007,7 +2095,7 @@ $PGMEND SSC_Program
 "Y48","HBW_Q1","","HBW - Q1 = Motor M1 conveyor belt forward -  QX_HBW_M1_Convey orBeltForward_Q1"
 "Y49","HBW_Q2","","HBW - Q2 = Motor M1 conveyor belt backward -  QX_HBW_M1_Convey orBeltBackward_Q2"
 "Y50","HBW_Q3","","HBW - Q3 = Motor M2 horizontal towards rack -  QX_HBW_M2_Horizont alTowardsRack_Q3"
-"Y51","HBW_Q4","","HBW - Q4 = Motor M2 horizontal towards conveyor belt -  QX_HBW_M2_Horizont alTowardsConveyorBelt _Q4"
+"Y51","HBW_Q4","","HBW - Q4 = Motor M2 horizontal towards conveyor belt -  QX_HBW_M2_Horizont alTowardsConveyorBel t _Q4"
 "Y52","MPO_Q6","","MPO - Q6 = Motor M4 oven feeder extend -  QX_MPO_M4_OvenFe ederExtend_Q6"
 "Y53","MPO_Q7","","MPO - Q7 = Motor M5 vacuum towards oven -  QX_MPO_M5_Vacuum TowardsOven_Q7"
 "Y80","HBW_PWM_M1","","QW_HBW_PWM_Con veyor Belt_M1"
