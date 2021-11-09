@@ -303,10 +303,10 @@ $LGCMOD MPO_Copy_State
 // Rung MPO_Copy_State#1
 // Offset 0
 STR ST1
-COPY 0x1 "4 0x0 MC400 C800 1 0x0 MC401 C801 1 0x0 MC402 C802 1 0x0 MC403 C803 1 0x0 MC404 C804 1 0x0 MC405 C805 1 0x0 MC406 C806 1 0x0 MC407 C807 1 0x0 MC408 C808 1 0x0 MC409 C809 1 0x0 Y16 MI400 1 0x0 Y43 MI401 1 0x0 MHR800 D1600 1"
+COPY 0x1 "4 0x0 MC400 C800 1 0x0 MC401 C801 1 0x0 MC402 C802 1 0x0 MC403 C803 1 0x0 MC404 C804 1 0x0 MC405 C805 1 0x0 MC406 C806 1 0x0 MC407 C807 1 0x0 MC408 C808 1 0x0 MC409 C809 1 0x0 C810 MI402 1 0x0 Y16 MI400 1 0x0 Y43 MI401 1 0x0 MHR800 D1600 1 0x0 MHR801 D1601 1"
 
 // Rung MPO_Copy_State#2
-// Offset 31
+// Offset 35
 RET
 
 // End of Code Block MPO_Copy_State
@@ -2691,6 +2691,16 @@ CALL MPO_Copy_State 0x1 DST511 "3" "3"
 // Rung MPO_Program#15
 // Offset 42
 #BEGIN FMT_COMMENT 
+"C801 is the ready status bit"
+#END
+
+STR ST1
+ANDN C1000
+OUT C810
+
+// Rung MPO_Program#16
+// Offset 45
+#BEGIN FMT_COMMENT 
 "Always be Detecting if we have something, if we get "
 "something set C1000 on"
 #END
@@ -2698,8 +2708,8 @@ CALL MPO_Copy_State 0x1 DST511 "3" "3"
 STRND X24
 SET C1000
 
-// Rung MPO_Program#16
-// Offset 45
+// Rung MPO_Program#17
+// Offset 48
 #BEGIN FMT_COMMENT 
 "If we have something (C1000) and we get a go from Doug "
 "(C800), start by turning on the compressor"
@@ -2710,8 +2720,8 @@ AND C800
 ANDN X17
 SET Y17
 
-// Rung MPO_Program#17
-// Offset 49
+// Rung MPO_Program#18
+// Offset 52
 #BEGIN FMT_COMMENT 
 "If the compressor is on, and we are outside the oven, open "
 "the door"
@@ -2721,8 +2731,8 @@ STR Y17
 AND X18
 SET Y20
 
-// Rung MPO_Program#18
-// Offset 52
+// Rung MPO_Program#19
+// Offset 55
 #BEGIN FMT_COMMENT 
 "If the Oven Door is Open, and we are not all the way "
 "inside, move the loading tray inside"
@@ -2733,100 +2743,112 @@ ANDN X17
 AND C800
 OUT Y44
 
-// Rung MPO_Program#19
-// Offset 56
+// Rung MPO_Program#20
+// Offset 59
 STR Y20
 AND X17
 RST Y20
 
-// Rung MPO_Program#20
-// Offset 59
+// Rung MPO_Program#21
+// Offset 62
+#BEGIN FMT_COMMENT 
+"Once inside, turn off the compressor, which will shut the door"
+#END
+
 STRND Y20
 AND X17
 RST Y17
 
-// Rung MPO_Program#21
-// Offset 63
+// Rung MPO_Program#22
+// Offset 66
+#BEGIN FMT_COMMENT 
+"Once inside and door is closed turn on oven"
+#END
+
 STRND Y20
 AND X17
 OFFDTMR T100 D1600 Y16
 
-// Rung MPO_Program#22
-// Offset 69
+// Rung MPO_Program#23
+// Offset 72
+#BEGIN FMT_COMMENT 
+"When done timing move to next stage"
+#END
+
 STRPD T100.Done
 AND X17
 JMP MPO_Program.S2
 
-// Rung MPO_Program#23
-// Offset 73
+// Rung MPO_Program#24
+// Offset 76
 STR C802
 JMP MPO_Program.S0
 
-// Rung MPO_Program#24
-// Offset 75
+// Rung MPO_Program#25
+// Offset 78
 SG MPO_Program.S2
 
-// Rung MPO_Program#25
-// Offset 77
+// Rung MPO_Program#26
+// Offset 80
 STR ST1
 CALL MPO_Copy_State 0x1 DST511 "3" "3"
 
-// Rung MPO_Program#26
-// Offset 85
+// Rung MPO_Program#27
+// Offset 88
 STR X17
 SET Y17
 
-// Rung MPO_Program#27
-// Offset 87
+// Rung MPO_Program#28
+// Offset 90
 STR X17
 ANDN Y20
 SET Y20
 
-// Rung MPO_Program#28
-// Offset 90
+// Rung MPO_Program#29
+// Offset 93
 STR Y20
 ANDN X18
 OUT Y52
 
-// Rung MPO_Program#29
-// Offset 93
+// Rung MPO_Program#30
+// Offset 96
 STR X18
 RST Y17
 
-// Rung MPO_Program#30
-// Offset 95
+// Rung MPO_Program#31
+// Offset 98
 STR X18
 RST Y20
 
-// Rung MPO_Program#31
-// Offset 97
+// Rung MPO_Program#32
+// Offset 100
 STR C802
 JMP MPO_Program.S0
 
-// Rung MPO_Program#32
-// Offset 99
+// Rung MPO_Program#33
+// Offset 102
 STR X18
 JMP MPO_Program.S3
 
-// Rung MPO_Program#33
-// Offset 101
+// Rung MPO_Program#34
+// Offset 104
 SG MPO_Program.S3
 
-// Rung MPO_Program#34
-// Offset 103
+// Rung MPO_Program#35
+// Offset 106
 STR ST1
 CALL MPO_Copy_State 0x1 DST511 "3" "3"
 
-// Rung MPO_Program#35
-// Offset 111
+// Rung MPO_Program#36
+// Offset 114
 STRN X19
 AND C800
 ANDN Y18
 PWMOUT @MPO_PWM_M5 $MPO_PWM_M5 Y91 200 70
 OUT Y53
 
-// Rung MPO_Program#36
-// Offset 129
+// Rung MPO_Program#37
+// Offset 132
 #BEGIN FMT_COMMENT 
 "When we first reach the oven (X19), turn on the compressor(Y17)"
 #END
@@ -2834,8 +2856,8 @@ OUT Y53
 STRPD X19
 SET Y17
 
-// Rung MPO_Program#37
-// Offset 132
+// Rung MPO_Program#38
+// Offset 135
 #BEGIN FMT_COMMENT 
 "When we reach the oven (X19) go down, and come back up "
 "after 3 seconds"
@@ -2844,8 +2866,8 @@ SET Y17
 STRPD X19
 OFFDTMR T101 3000 Y19
 
-// Rung MPO_Program#38
-// Offset 137
+// Rung MPO_Program#39
+// Offset 140
 #BEGIN FMT_COMMENT 
 "Turn on the vacuum in order to pick up disk, before the "
 "timer turns the crane down bit off. #TODO finish comment "
@@ -2856,28 +2878,28 @@ STRLE T101.Acc 750
 AND T101.Timing
 SET Y18
 
-// Rung MPO_Program#39
-// Offset 143
+// Rung MPO_Program#40
+// Offset 146
 STRPD T101.Done
 AND X19
 JMP MPO_Program.S4
 
-// Rung MPO_Program#40
-// Offset 147
+// Rung MPO_Program#41
+// Offset 150
 STR C802
 JMP MPO_Program.S0
 
-// Rung MPO_Program#41
-// Offset 149
+// Rung MPO_Program#42
+// Offset 152
 SG MPO_Program.S4
 
-// Rung MPO_Program#42
-// Offset 151
+// Rung MPO_Program#43
+// Offset 154
 STR ST1
 CALL MPO_Copy_State 0x1 DST511 "3" "3"
 
-// Rung MPO_Program#43
-// Offset 159
+// Rung MPO_Program#44
+// Offset 162
 #BEGIN FMT_COMMENT 
 "When the vacuum is on [which means we have something] "
 "(Y18), we are done timing (T0.Done), and we are not at the "
@@ -2890,8 +2912,8 @@ ANDN X16
 PWMOUT @MPO_PWM_M5 $MPO_PWM_M5 Y91 200 70
 OUT Y15
 
-// Rung MPO_Program#44
-// Offset 176
+// Rung MPO_Program#45
+// Offset 179
 #BEGIN FMT_COMMENT 
 "When we turn off the vacuum(Y18) and are at the turntable "
 "positon(X16), jump to the next stage"
@@ -2900,20 +2922,20 @@ OUT Y15
 STRPD X16
 OFFDTMR T102 3000 Y19
 
-// Rung MPO_Program#45
-// Offset 181
+// Rung MPO_Program#46
+// Offset 184
 STRLE T102.Acc 750
 AND T102.Timing
 RST Y18
 
-// Rung MPO_Program#46
-// Offset 187
+// Rung MPO_Program#47
+// Offset 190
 STR X16
 ANDPD T102.Done
 JMP MPO_Program.S5
 
-// Rung MPO_Program#47
-// Offset 191
+// Rung MPO_Program#48
+// Offset 194
 #BEGIN FMT_COMMENT 
 "This is the reset button"
 #END
@@ -2921,127 +2943,143 @@ JMP MPO_Program.S5
 STR C802
 JMP MPO_Program.S0
 
-// Rung MPO_Program#48
-// Offset 193
+// Rung MPO_Program#49
+// Offset 196
 SG MPO_Program.S5
 
-// Rung MPO_Program#49
-// Offset 195
+// Rung MPO_Program#50
+// Offset 198
 STR ST1
 CALL MPO_Copy_State 0x1 DST511 "3" "3"
 
-// Rung MPO_Program#50
-// Offset 203
+// Rung MPO_Program#51
+// Offset 206
+#BEGIN FMT_COMMENT 
+"Turn turntable until at position to saw"
+#END
+
 STRN X15
 AND C800
 OUT Y45
 
-// Rung MPO_Program#51
-// Offset 206
-STRPD X15
-OFFDTMR T103 3000 Y43
-
 // Rung MPO_Program#52
-// Offset 211
+// Offset 209
+#BEGIN FMT_COMMENT 
+"Once you reach saw position, activate the saw"
+#END
+
+STRPD X15
+OFFDTMR T103 D1601 Y43
+
+// Rung MPO_Program#53
+// Offset 214
+#BEGIN FMT_COMMENT 
+"Once done sawing, move to the next stage"
+#END
+
 STR X15
 ANDPD T103.Done
 ANDN X13
 JMP MPO_Program.S6
 
-// Rung MPO_Program#53
-// Offset 216
+// Rung MPO_Program#54
+// Offset 219
 STR C802
 JMP MPO_Program.S0
 
-// Rung MPO_Program#54
-// Offset 218
+// Rung MPO_Program#55
+// Offset 221
 SG MPO_Program.S6
 
-// Rung MPO_Program#55
-// Offset 220
+// Rung MPO_Program#56
+// Offset 223
 STR ST1
 CALL MPO_Copy_State 0x1 DST511 "3" "3"
 
-// Rung MPO_Program#56
-// Offset 228
+// Rung MPO_Program#57
+// Offset 231
+#BEGIN FMT_COMMENT 
+"Keep rotating until we are at plunger position"
+#END
+
 STR C800
 ANDN X13
 OUT Y45
 
-// Rung MPO_Program#57
-// Offset 231
-STRPD X13
-SET Y18
-
 // Rung MPO_Program#58
 // Offset 234
 STRPD X13
-OFFDTMR T103 750 Y21
+SET Y18
 
 // Rung MPO_Program#59
-// Offset 239
+// Offset 237
 STRPD X13
-SET Y47
+OFFDTMR T103 750 Y21
 
 // Rung MPO_Program#60
 // Offset 242
-STRPD X14
-RST Y47
+STRPD X13
+SET Y47
 
 // Rung MPO_Program#61
 // Offset 245
+STRPD X14
+RST Y47
+
+// Rung MPO_Program#62
+// Offset 248
 STR C802
 JMP MPO_Program.S0
 
-// Rung MPO_Program#62
-// Offset 247
+// Rung MPO_Program#63
+// Offset 250
 STRN X14
 JMP MPO_Program.S0
 
-// Rung MPO_Program#63
-// Offset 249
+// Rung MPO_Program#64
+// Offset 252
 NOP
 
-// Rung MPO_Program#64
-// Offset 250
+// Rung MPO_Program#65
+// Offset 253
 SG MPO_Program.S7
 
-// Rung MPO_Program#65
-// Offset 252
+// Rung MPO_Program#66
+// Offset 255
 STR ST1
 CALL MPO_Copy_State 0x1 DST511 "3" "3"
 
-// Rung MPO_Program#66
-// Offset 260
+// Rung MPO_Program#67
+// Offset 263
 STR ST1
 FLASHER 500 500 Y39
 
-// Rung MPO_Program#67
-// Offset 265
+// Rung MPO_Program#68
+// Offset 268
 STR ST1
 FLASHER 500 500 Y40
 
-// Rung MPO_Program#68
-// Offset 270
+// Rung MPO_Program#69
+// Offset 273
 STR ST1
 FLASHER 500 500 Y41
 
-// Rung MPO_Program#69
-// Offset 275
+// Rung MPO_Program#70
+// Offset 278
 STR C809
 ANDN X19
 PWMOUT @MPO_PWM_M5 $MPO_PWM_M5 Y91 200 70
 OUT Y53
 
-// Rung MPO_Program#70
-// Offset 292
+// Rung MPO_Program#71
+// Offset 295
 STR C808
 ANDN X16
 PWMOUT @MPO_PWM_M5 $MPO_PWM_M5 Y91 200 70
 OUT Y15
 
-// Rung MPO_Program#71
-// Offset 309
+// Rung MPO_Program#72
+// Offset 312
 STRN C801
 JMP MPO_Program.S0
 
